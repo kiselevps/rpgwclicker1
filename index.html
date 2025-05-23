@@ -1,67 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Кликер-розыгрыш</title>
     <meta charset="UTF-8">
+    <meta name="viewport" 
+          content="width=device-width, initial-scale=1.0, 
+                  maximum-scale=1.0, user-scalable=no,
+                  viewport-fit=cover">
+    <title>Кликер</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
+            margin: 0;
             padding: 20px;
-            background-color: #f0f8ff;
+            text-align: center;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
         }
         #clickButton {
-            padding: 15px 30px;
-            font-size: 18px;
+            width: 90%;
+            height: 200px;
+            margin: 20px auto;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: transform 0.1s;
-        }
-        #clickButton:active {
-            transform: scale(0.95);
         }
         #counter {
-            font-size: 24px;
-            margin: 20px;
-        }
-        #code {
-            font-size: 18px;
-            color: #ff5722;
-            font-weight: bold;
-            display: none;
+            font-size: 20px;
+            margin: 15px;
         }
     </style>
 </head>
 <body>
-    <h1>Кликер-розыгрыш</h1>
-    <p>Сделай 1000 кликов, чтобы получить код!</p>
+    <h2>Кликер для кода</h2>
     <div id="counter">Кликов: 0</div>
     <button id="clickButton">ЖМИ!</button>
-    <div id="code"></div>
 
     <script>
         let clicks = 0;
         const clickButton = document.getElementById('clickButton');
         const counter = document.getElementById('counter');
-        const codeElement = document.getElementById('code');
+        
+        // Защита от двойного тапа
+        clickButton.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+        });
 
         clickButton.addEventListener('click', () => {
             clicks++;
             counter.textContent = `Кликов: ${clicks}`;
             
-            if (clicks >= 10) {
-                codeElement.textContent = `🎉 Твой код: buGFLebwB3TFz`;
-                codeElement.style.display = 'block';
+            if (clicks >= 1000) {
+                Telegram.WebApp.sendData(JSON.stringify({
+                    action: "get_code",
+                    user_id: Telegram.WebApp.initDataUnsafe.user?.id
+                }));
                 clickButton.disabled = true;
-                Telegram.WebApp.sendData(JSON.stringify({code: "buGFLebwB3TFz"})); // Отправка кода в бота
+                clickButton.textContent = "Готово!";
             }
         });
 
-        // Инициализация Telegram Web App
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
     </script>
