@@ -54,20 +54,23 @@
             e.preventDefault();
         });
 
-        clickButton.addEventListener('click', () => {
-            clicks++;
-            counter.textContent = `Кликов: ${clicks}`;
-            
-            if (clicks >= 10) {
-                Telegram.WebApp.sendData(JSON.stringify({
-                    action: "get_code",
-                    user_id: Telegram.WebApp.initDataUnsafe.user?.id
-                }));
-                clickButton.disabled = true;
-                clickButton.textContent = "Готово!";
-            }
-        });
-
+            clickButton.addEventListener('click', () => {
+                clicks++;
+                counter.textContent = `Кликов: ${clicks}`;
+                
+                if (clicks >= 1000) {
+                    const user = Telegram.WebApp.initDataUnsafe.user;
+                    if (user && user.id) {
+                        Telegram.WebApp.sendData(JSON.stringify({
+                            action: "get_code",
+                            user_id: user.id
+                        }));
+                    } else {
+                        alert("Ошибка: не удалось получить ID пользователя");
+                    }
+                    clickButton.disabled = true;
+                }
+            });
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
     </script>
