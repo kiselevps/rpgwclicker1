@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Кликер-розыгрыш</title>
+    <meta charset="UTF-8">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        #clickButton {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        #clickButton:active {
+            transform: scale(0.95);
+        }
+        #counter {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #code {
+            font-size: 18px;
+            color: #ff5722;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Кликер-розыгрыш</h1>
+    <p>Сделай 1000 кликов, чтобы получить код!</p>
+    <div id="counter">Кликов: 0</div>
+    <button id="clickButton">ЖМИ!</button>
+    <div id="code"></div>
+
+    <script>
+        let clicks = 0;
+        const clickButton = document.getElementById('clickButton');
+        const counter = document.getElementById('counter');
+        const codeElement = document.getElementById('code');
+
+        clickButton.addEventListener('click', () => {
+            clicks++;
+            counter.textContent = `Кликов: ${clicks}`;
+            
+            if (clicks >= 10) {
+                codeElement.textContent = `🎉 Твой код: buGFLebwB3TFz`;
+                codeElement.style.display = 'block';
+                clickButton.disabled = true;
+                Telegram.WebApp.sendData(JSON.stringify({code: "buGFLebwB3TFz"})); // Отправка кода в бота
+            }
+        });
+
+        // Инициализация Telegram Web App
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+    </script>
+</body>
+</html>
