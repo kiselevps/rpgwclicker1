@@ -1,76 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Кликер</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-            touch-action: manipulation;
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-        #clickButton {
-            width: 90%;
-            height: 200px;
-            margin: 20px auto;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #counter {
-            font-size: 20px;
-            margin: 15px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Кликер</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    #clickButton {
+      width: 90%;
+      height: 200px;
+      margin: 20px auto;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    #counter {
+      font-size: 20px;
+    }
+  </style>
 </head>
 <body>
-    <h2>Кликер для кода</h2>
-    <div id="counter">Кликов: 0</div>
-    <button id="clickButton">ЖМИ!</button>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const clickButton = document.getElementById('clickButton');
-            const counter = document.getElementById('counter');
-            let clicks = 0;
-            
-            // Инициализация WebApp
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-            
-            clickButton.addEventListener('click', () => {
-                clicks++;
-                counter.textContent = `Кликов: ${clicks}`;
-                
-                if (clicks >= 10) { // Тестовое значение
-                    try {
-                        const user = Telegram.WebApp.initDataUnsafe.user;
-                        if (user?.id) {
-                            Telegram.WebApp.sendData(JSON.stringify({
-                                action: "get_code",
-                                user_id: user.id
-                            }));
-                            clickButton.disabled = true;
-                            clickButton.textContent = "Готово!";
-                        } else {
-                            alert("Ошибка: не удалось получить ID");
-                        }
-                    } catch (e) {
-                        alert(`Ошибка: ${e.message}`);
-                    }
-                }
-            });
-        });
-    </script>
+  <h2>Кликер для кода</h2>
+  <div id="counter">Кликов: 0</div>
+  <button id="clickButton">ЖМИ!</button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const clickButton = document.getElementById('clickButton');
+      const counter = document.getElementById('counter');
+      let clicks = 0;
+
+      // Telegram WebApp API
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+
+      clickButton.addEventListener('click', () => {
+        clicks++;
+        counter.textContent = `Кликов: ${clicks}`;
+
+        if (clicks >= 10) {
+          try {
+            const user = Telegram.WebApp.initDataUnsafe.user;
+            if (user && user.id) {
+              Telegram.WebApp.sendData(JSON.stringify({
+                action: "get_code",
+                user_id: user.id
+              }));
+              clickButton.disabled = true;
+              clickButton.textContent = "Готово!";
+            } else {
+              alert("Не удалось получить ID пользователя");
+            }
+          } catch (e) {
+            alert("Ошибка отправки: " + e.message);
+          }
+        }
+      });
+    });
+  </script>
+
 </body>
 </html>
