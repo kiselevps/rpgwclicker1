@@ -1,84 +1,40 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Кликер</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    #clickButton {
-      width: 90%;
-      height: 200px;
-      margin: 20px auto;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 15px;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: manipulation;
-    }
-
-    #counter {
-      font-size: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>  <!-- Официальный SDK -->
+    <style>
+        body { font-family: Arial; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; background: #0088cc; color: white; border: none; border-radius: 5px; }
+    </style>
 </head>
 <body>
+    <h1>Привет, <span id="username">пользователь</span>!</h1>
+    <p>Ваш chat_id: <span id="chatId">не определён</span></p>
+    <button id="sendButton">Отправить уведомление</button>
 
-  <h2>Кликер для кода</h2>
-  <div id="counter">Кликов: 0</div>
-  <button id="clickButton">ЖМИ!</button>
+    <script>
+        const tg = window.Telegram.WebApp;
+        
+        // Показываем данные пользователя
+        document.getElementById("username").textContent = tg.initDataUnsafe.user?.username || "гость";
+        document.getElementById("chatId").textContent = tg.initDataUnsafe.user?.id || "неизвестен";
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const clickButton = document.getElementById('clickButton');
-      const counter = document.getElementById('counter');
-      let clicks = 0;
+        // Отправка уведомления обратно в бота
+        document.getElementById("sendButton").addEventListener("click", () => {
+            tg.sendData(JSON.stringify({
+                action: "notify",
+                text: "Пользователь нажал кнопку в Web App!"
+            }));
+            tg.close();  // Закрыть веб-приложение (опционально)
+        });
 
-      // Telegram WebApp API
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand();
-
-      clickButton.addEventListener('click', () => {
-        clicks++;
-        counter.textContent = `Кликов: ${clicks}`;
-
-        if (clicks >= 10) {
-          try {
-            const user = Telegram.WebApp.initDataUnsafe.user;
-            if (user && user.id) {
-              Telegram.WebApp.sendData(JSON.stringify({
-                action: "get_code",
-                user_id: user.id
-              }));
-              clickButton.disabled = true;
-              clickButton.textContent = "Готово!";
-            } else {
-              alert("Не удалось получить ID пользователя");
-            }
-          } catch (e) {
-            alert("Ошибка отправки: " + e.message);
-          }
+        // Если веб-приложение запущено НЕ в Telegram, показываем заглушку
+        if (!window.Telegram?.WebApp?.initData) {
+            document.body.innerHTML = "<h2>Откройте это приложение через Telegram-бота!</h2>";
         }
-      });
-    });
-  </script>
-
+    </script>
 </body>
 </html>
