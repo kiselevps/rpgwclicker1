@@ -2,10 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" 
-          content="width=device-width, initial-scale=1.0, 
-                  maximum-scale=1.0, user-scalable=no,
-                  viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Кликер</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -14,8 +11,6 @@
             padding: 20px;
             text-align: center;
             touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
         }
@@ -31,7 +26,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
         }
         #counter {
             font-size: 20px;
@@ -45,34 +39,38 @@
     <button id="clickButton">ЖМИ!</button>
 
     <script>
-        let clicks = 0;
-        const clickButton = document.getElementById('clickButton');
-        const counter = document.getElementById('counter');
-        
-        // Защита от двойного тапа
-        clickButton.addEventListener('dblclick', (e) => {
-            e.preventDefault();
-        });
-
+        document.addEventListener('DOMContentLoaded', () => {
+            const clickButton = document.getElementById('clickButton');
+            const counter = document.getElementById('counter');
+            let clicks = 0;
+            
+            // Инициализация WebApp
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+            
             clickButton.addEventListener('click', () => {
                 clicks++;
                 counter.textContent = `Кликов: ${clicks}`;
                 
-                if (clicks >= 10) {
-                    const user = Telegram.WebApp.initDataUnsafe.user;
-                    if (user && user.id) {
-                        Telegram.WebApp.sendData(JSON.stringify({
-                            action: "get_code",
-                            user_id: user.id
-                        }));
-                    } else {
-                        alert("Ошибка: не удалось получить ID пользователя");
+                if (clicks >= 10) { // Тестовое значение
+                    try {
+                        const user = Telegram.WebApp.initDataUnsafe.user;
+                        if (user?.id) {
+                            Telegram.WebApp.sendData(JSON.stringify({
+                                action: "get_code",
+                                user_id: user.id
+                            }));
+                            clickButton.disabled = true;
+                            clickButton.textContent = "Готово!";
+                        } else {
+                            alert("Ошибка: не удалось получить ID");
+                        }
+                    } catch (e) {
+                        alert(`Ошибка: ${e.message}`);
                     }
-                    clickButton.disabled = true;
                 }
             });
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
+        });
     </script>
 </body>
 </html>
